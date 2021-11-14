@@ -25,7 +25,7 @@ class App extends React.Component {
 
       this.setState({ count: this.state.count + 1 });
       this.setState({ cells: updatedCells });
-      console.log(this.state.count);
+      // console.log(this.state.count);
     }
 
     this.isWinner(symbol);
@@ -51,32 +51,47 @@ class App extends React.Component {
         && this.state.cells[combination[2]] === symbol) {
         
         if (symbol === 'X') {
-          this.setState({ victoryСounterX: this.state.victoryСounterX + 1 });
-          sessionStorage.setItem('victoryСounterX', this.state.victoryСounterX + 1);//если убрать +1, счётчик отстаёт на единицу. Как будь-то берет не свежее занчение 
+          this.setState({ victoryСounterX: (this.state.victoryСounterX + 1) }, () =>
+            this.writeToStorage('victoryСounterX', this.state.victoryСounterX))
+
         }
         if (symbol === 'O') {
-          this.setState({ victoryСounterO: this.state.victoryСounterO + 1 });
-          setTimeout(() => {
-            sessionStorage.setItem('ViCounterO', this.state.victoryСounterO)//почему значение берётся только после задержки?
-          } ,0)
-          // this.victoryCounterStorage('ViCounterO', this.state.victoryСounterO);
+          this.setState({ victoryСounterO: (this.state.victoryСounterO + 1) }, () =>
+            sessionStorage.setItem('victoryСounterO', this.state.victoryСounterO));
         }
-        
+
         alert(`Win "${symbol}"`);
         this.resetField();
       }
     }
     )
-  }
+  };
 
   isDraw = (count) => {
     if (count === 8) {
       alert('Ничья')
     }
-  }
+  };
 
-  victoryCounterStorage = (key, stateName) => {
+
+  writeToStorage = (key, stateName) => {
     sessionStorage.setItem(key, stateName)
+  };
+
+  deleteFromStorage = (key) => {
+    sessionStorage.removeItem(key);
+  };
+
+  readFromStorage = (key) => {
+    let isExite = sessionStorage.getItem(key) !== null;
+    console.log(isExite);
+
+    let countStorage = isExite ? sessionStorage.getItem(key) : 0;
+    console.log(countStorage);
+
+
+    this.setState({ key: countStorage });
+    console.log( key, countStorage );
   }
 
 
@@ -84,15 +99,21 @@ class App extends React.Component {
     this.setState({ count: 0 });
     this.setState({ cells: Array(9).fill(null) });
     console.clear();
-  }
+  };
 
   resetGameScore = () => {
     this.setState({ victoryСounterX: 0 });
     this.setState({ victoryСounterO: 0 });
-    sessionStorage.removeItem('victoryСounterX');
-    sessionStorage.removeItem('ViCounterO');
-  }
+    this.deleteFromStorage('victoryСounterX');
+    this.deleteFromStorage('victoryСounterO');
+  };
 
+
+
+  componentDidMount() {
+    this.readFromStorage('victoryСounterX');
+    console.log(this.state);
+  }
 
   render() {
     return (
