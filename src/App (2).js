@@ -10,26 +10,33 @@ class App extends React.Component {
       count: 0,
       victoryСounterX: 0,
       victoryСounterO: 0,
+      startWithO: false,
+      sign: "X"
     }
   }
+
+  startWithO = (event) => {
+    console.log(event.target.checked);
+    if (event.target.checked) {
+      this.setState({ sign: "O" })
+    }
+  };
 
   clickCell = (event) => {
     let cellClicked = event.target.getAttribute('data');
     let updatedCells = this.state.cells;
-    let symbol = (this.state.count % 2 === 0) ?
-      'X' :
-      'O';
+    let symbol = this.state.sign;
     
     if (updatedCells[cellClicked] === null) {
       updatedCells[cellClicked] = symbol;
 
       this.setState({ count: this.state.count + 1 });
       this.setState({ cells: updatedCells });
+      this.setState({ sign: (this.state.sign === "X" ? "O" : "X") })
     }
 
     this.isWinner(symbol);
-    this.isDraw (this.state.count);
-
+    this.isDraw(this.state.count);
   }
 
   isWinner = (symbol) => {
@@ -69,6 +76,7 @@ class App extends React.Component {
   isDraw = (count) => {
     if (count === 8) {
       alert('Ничья')
+      this.resetField();
     }
   };
 
@@ -85,7 +93,7 @@ class App extends React.Component {
   readFromStorage = (key) => {
     let isExite = sessionStorage.getItem(key) !== null;
     let countFromStorage = isExite ? sessionStorage.getItem(key) : 0;
-    this.setState({ [key]: countFromStorage });
+    this.setState({ [key]: +countFromStorage });
 
   }
 
@@ -95,7 +103,9 @@ class App extends React.Component {
   resetField = () => {
     this.setState({ count: 0 });
     this.setState({ cells: Array(9).fill(null) });
-    console.clear();
+    document.getElementById('isO').checked = false;
+    this.setState({ sign: "X" })
+
   };
 
   resetGameScore = () => {
@@ -111,12 +121,13 @@ class App extends React.Component {
 
     this.readFromStorage('victoryСounterX');
     this.readFromStorage('victoryСounterO');
-  
+
   }
 
   render() {
+
     return (
-      <div>
+      <div style={{textAlign: 'center'}}>
 
         <section className="b-tic-tac-toe">
           <div className="b-tic-tac-toe__cell" onClick={this.clickCell} data="0">{this.state.cells[0]}</div>
@@ -129,6 +140,12 @@ class App extends React.Component {
           <div className="b-tic-tac-toe__cell" onClick={this.clickCell} data="7">{this.state.cells[7]}</div>
           <div className="b-tic-tac-toe__cell" onClick={this.clickCell} data="8">{this.state.cells[8]}</div>
         </section>
+
+        <section>
+          <input type="checkbox" value="O" id="isO" onChange={this.startWithO} />
+          <p style={{ display: 'inline-block'}}>Начать "ноликом"</p>
+        </section>
+
         <button onClick={this.resetField}>Очистить поле</button>
         <p>Win X - {this.state.victoryСounterX}</p>
         <p>Win O - {this.state.victoryСounterO}</p>
