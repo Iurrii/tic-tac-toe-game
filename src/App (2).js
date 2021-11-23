@@ -16,7 +16,6 @@ class App extends React.Component {
   }
 
   startWithO = (event) => {
-    console.log(event.target.checked);
     if (event.target.checked) {
       this.setState({ sign: "O" })
     }
@@ -146,7 +145,7 @@ class App extends React.Component {
           <p style={{ display: 'inline-block'}}>Начать "ноликом"</p>
         </section>
 
-        <button onClick={this.resetField}>Очистить поле</button>
+        <button onClick={this.resetField}>Новая игра</button>
         <p>Win X - {this.state.victoryСounterX}</p>
         <p>Win O - {this.state.victoryСounterO}</p>
         <button onClick={this.resetGameScore}>Очистить счёт</button>
